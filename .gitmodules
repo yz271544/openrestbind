@@ -1,0 +1,3 @@
+[submodule "teradata-ice-code"]
+	path = teradata-ice-code
+	url = git@github.com:yz271544/teradata-ice-code.git
