@@ -1,0 +1,56 @@
+local function get_system_uuid()
+	local handle = io.popen("dmidecode -s system-uuid 2>/dev/null")
+	if handle then
+		local result = handle:read("*a")
+		handle:close()
+		if result then
+			return result:gsub("%s+", "") 
+		end
+	end
+	return nil
+end
+
+local function load_ini_config(file_path)
+	local config = {}
+	for line in io.lines(file_path) do
+		local key, value = line:match("([^=]+)=([^=]+)")
+		if key and value then
+			config[key:match("^%s*(.-)%s*$")] = value:match("^%s*(.-)%s*$") 
+		end
+	end
+	return config
+end
+
+local function decode_bind_uuid(bind_uuid)
+	local command = "/usr/local/openresty/bin/IceCode.exe -d " .. bind_uuid .. " jingwei0226"
+	ngx.log(ngx.INFO, "command:", command)
+	local file = io.popen(command)
+	if file then
+		local decode_uuid = file:read("*a")
+		file:close()
+		ngx.log(ngx.INFO, "decode_uuid:", decode_uuid)
+		return decode_uuid
+	else
+		ngx.log(ngx.INFO, "无法执行命令")
+		return ""
+	end
+end
+
+local config = load_ini_config("/usr/local/openresty/nginx/conf/bind.ini")
+local bind_uuid = config["bind_uuid"]
+ngx.log(ngx.INFO, "bind_uuid:", bind_uuid)
+local decode_buuid = decode_bind_uuid(bind_uuid)
+ngx.log(ngx.INFO, "decode_buuid:", decode_buuid)
+local real_uuid = get_system_uuid()
+ngx.log(ngx.INFO, "real uuid:", real_uuid)
+
+local license_check_passed = false
+if decode_buuid == real_uuid then
+	license_check_passed = true
+	ngx.ctx.license_check_result = "JINGWEI"
+	ngx.log(ngx.INFO, "License check success add header")
+	ngx.header["LICENSECHECK"]="JINGWEI" 
+else
+	ngx.log(ngx.INFO, "License check failed!")
+	ngx.status = ngx.HTTP_FORBIDDEN
+end
