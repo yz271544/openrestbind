@@ -8,7 +8,6 @@ local function get_system_uuid()
             return result:gsub("%s+", "")
         end
     end
-    ngx.log(ngx.ERR, "Failed to get system UUID")
     return nil
 end
 
@@ -16,7 +15,6 @@ local function load_ini_config(file_path)
     local config = {}
     local file = io.open(file_path, "r")
     if not file then
-        ngx.log(ngx.ERR, "Failed to open config file: ", file_path)
         return config
     end
     for line in file:lines() do
@@ -52,37 +50,58 @@ local function license_check()
 
     local license_check_passed = false
     if decode_buuid == real_uuid then
+        ngx.log(ngx.INFO, "check license success")
         license_check_passed = true
         ngx.ctx.license_check_result = "JINGWEI"
     else
+        ngx.log(ngx.INFO, "check license failed")
         ngx.ctx.license_check_result = "License check failed"
+        ngx.status = ngx.HTTP_FORBIDDEN
     end
     return license_check_passed
 end
 
 local function handle_container_validation()
-    local license_passed = license_check()
-    if license_passed then
-        ngx.header["Content-Type"] = "application/json; charset=utf-8"
+    local args = ngx.req.get_uri_args()
+    local license_check_passed = license_check()
+    if license_check_passed then
+        ngx.header.content_type = "application/json; charset=utf-8"
         ngx.say('{"code": 200, "msg": "success", "data": "License验证通过"}')
     else
-        ngx.header["Content-Type"] = "application/json; charset=utf-8"
+        ngx.header.content_type = "application/json; charset=utf-8"
         ngx.say('{"code": 400, "msg": "error", "data": "License验证失败"}')
     end
     ngx.exit(ngx.HTTP_OK)
 end
 
-local function handle_protected_route(backend_location)
-    local license_passed = license_check()
-    if license_passed then
+local function check_and_proxy()
+    local result = ngx.ctx.license_check_result
+    ngx.log(ngx.INFO, "check_and_proxy: ", result)
+    if result == "JINGWEI" then
         ngx.header["LICENSECHECK"] = "JINGWEI"
         local backend_server = ngx.var.backend
         ngx.var.proxy_pass = backend_server
-        ngx.exec(backend_location)
+        ngx.exec("@backend_prod_api")
     else
-        ngx.header["Content-Type"] = "application/json; charset=utf-8"
         ngx.status = ngx.HTTP_FORBIDDEN
-        ngx.say('{"code": 200, "msg": "error", "data": "', ngx.ctx.license_check_result, '"}')
+        ngx.say(result)
+        ngx.exit(ngx.HTTP_FORBIDDEN)
+    end
+end
+
+local function check_gis_server_and_proxy()
+    local result = ngx.ctx.license_check_result
+    ngx.log(ngx.INFO, "check_gis_server_and_proxy: ", result)
+    if result == "JINGWEI" then
+        ngx.log(ngx.INFO, "check_gis_server_and_proxy success: ", result)
+        ngx.header["LICENSECHECK"] = "JINGWEI"
+        local backend_server = ngx.var.backend
+        ngx.var.proxy_pass = backend_server
+        ngx.exec("@backend_gis_server")
+    else
+        ngx.log(ngx.INFO, "check git server failed: ", result)
+        ngx.status = ngx.HTTP_FORBIDDEN
+        ngx.say(result)
         ngx.exit(ngx.HTTP_FORBIDDEN)
     end
 end
@@ -90,10 +109,12 @@ end
 local function main()
     if ngx.var.uri == "/check_container" then
         handle_container_validation()
-    elseif ngx.var.uri:find("^/prod%-api") then
-        handle_protected_route("@backend_prod_api")
-    elseif ngx.var.uri:find("^/gis_server_anbao") then
-        handle_protected_route("@backend_gis_server_anbao")
+    elseif ngx.var.uri == "/prod-api" then
+        license_check()
+        check_and_proxy()
+    elseif ngx.var.uri == "/gis_server_anbao" then
+        license_check()
+        check_gis_server_and_proxy()
     else
         license_check()
     end

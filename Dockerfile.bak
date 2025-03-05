@@ -6,4 +6,5 @@ RUN apt install -y dmidecode sudo
 
 COPY bin/IceCode.exe /usr/local/openresty/bin/IceCode.exe
 COPY lsbkd.lua /usr/local/openresty/bin/lsbkd.lua
+COPY check_licensed.lua /usr/local/openresty/bin/check_licensed.lua
 
