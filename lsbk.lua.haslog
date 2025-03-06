@@ -75,11 +75,13 @@ end
 local function handle_protected_route(backend_location)
     local license_passed = license_check()
     if license_passed then
+        ngx.log(ngx.INFO, "licence SUCCESS handle protected route: ", backend_location)
         ngx.header["LICENSECHECK"] = "JINGWEI"
         local backend_server = ngx.var.backend
         ngx.var.proxy_pass = backend_server
         ngx.exec(backend_location)
     else
+        ngx.log(ngx.INFO, "license FAILED")
         ngx.header["Content-Type"] = "application/json; charset=utf-8"
         ngx.status = ngx.HTTP_FORBIDDEN
         ngx.say('{"code": 200, "msg": "error", "data": "', ngx.ctx.license_check_result, '"}')
@@ -90,16 +92,22 @@ end
 local function main()
     local uri = ngx.var.uri
     if uri == "/" or uri == "/index.html" or uri == "/index.htm" or uri:find("^/login") then
+        ngx.log(ngx.INFO, "access static root")
         return ngx.exec("@static_files")
     elseif uri:find("^/static/") or uri == "/favicon.ico" or uri:find("^/files/") or uri == "/preview.html" or uri == "/robots.txt" or uri:find("^/libs/") then
+        -- 直接放行静态资源请求
+        ngx.log(ngx.INFO, "access static resource: ", uri)
         return ngx.exec("@static_files")
     elseif uri == "/check_container" then
         handle_container_validation()
     elseif uri:find("^/prod%-api") then
+        ngx.log(ngx.INFO, "access prod-api -> backend_prod_api")
         handle_protected_route("@backend_prod_api")
     elseif uri:find("^/gis_server_anbao") then
+        ngx.log(ngx.INFO, "access gis_server_anbao -> backend_gis_server_anbao")
         handle_protected_route("@backend_gis_server_anbao")
     else
+        ngx.log(ngx.INFO, "check license, url: ", uri)
         license_check()
     end
 end
