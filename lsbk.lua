@@ -89,10 +89,9 @@ end
 
 local function main()
     local uri = ngx.var.uri
-    if uri == "/" or uri == "/index.html" or uri == "/index.htm" or uri:find("^/login") then
-        return ngx.exec("@static_files")
-    elseif uri:find("^/static/") or uri == "/favicon.ico" or uri:find("^/files/") or uri == "/preview.html" or uri == "/robots.txt" or uri:find("^/libs/") then
-        return ngx.exec("@static_files")
+    if uri == nil then
+        ngx.log(ngx.INFO, "Ignore uri: ", uri, " only license check")
+        license_check()
     elseif uri == "/check_container" then
         handle_container_validation()
     elseif uri:find("^/prod%-api") then
@@ -100,7 +99,7 @@ local function main()
     elseif uri:find("^/gis_server_anbao") then
         handle_protected_route("@backend_gis_server_anbao")
     else
-        license_check()
+        return ngx.exec("@static_files")
     end
 end
 
