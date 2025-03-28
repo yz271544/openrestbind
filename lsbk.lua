@@ -92,7 +92,7 @@ local function main()
     if uri == nil then
         ngx.log(ngx.INFO, "Ignore uri: ", uri, " only license check")
         license_check()
-    elseif uri == "/check_container" then
+    elseif uri == "/api/check_container" then
         handle_container_validation()
     elseif uri:find("^/prod%-api") then
         handle_protected_route("@backend_prod_api")
