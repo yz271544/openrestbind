@@ -4,12 +4,13 @@ local function get_system_uuid()
     if handle then
         local result = handle:read("*a")
         handle:close()
-        if result then
-            return result:gsub("%s+", "")
+        result = result:gsub("%s+", "")
+        if result ~= "" then
+            return result
         end
     end
-    ngx.log(ngx.ERR, "Failed to get system UUID")
-    return nil
+    ngx.log(ngx.ERR, "Failed to get system UUID, return default bind code")
+    return "2663267a-4d64-4c60-97c3-cb7d1bdaab36"
 end
 
 local function load_ini_config(file_path)
@@ -104,3 +105,4 @@ local function main()
 end
 
 main()
+
