@@ -1,5 +1,5 @@
-#FROM openresty/openresty:noble-amd64
-FROM openresty/openresty:1.27.1.2-noble
+FROM openresty/openresty:1.27.1.2-bookworm-fat
+
 LABEL authors="Lyndon"
 
 RUN apt update

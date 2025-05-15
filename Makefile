@@ -6,10 +6,15 @@ version:
 
 REPO ?= registry.cn-beijing.aliyuncs.com/dc_huzy
 
+.PHONY: jingwei-frontend
+jingwei-frontend:
+	@./release.sh ${VERSION}
+	docker buildx build --platform linux/amd64,linux/arm64 -t ${REPO}/jingwei-frontend:${VERSION} --build-arg VERSION=${VERSION} -f Dockerfile --puth .
+
 .PHONY: jingwei-frontend-amd64
 jingwei-frontend-amd64:
 	@./release.sh ${VERSION}
-	docker buildx build --platform linux/amd64 -t ${REPO}/jingwei-frontend-amd64:${VERSION} --build-arg VERSION=${VERSION} -f Dockerfile . --load
+	docker buildx build --platform linux/amd64 -t ${REPO}/jingwei-frontend-amd64:${VERSION} --build-arg VERSION=${VERSION} -f Dockerfile --puth .
 
 .PHONY: jingwei-frontend-arm64
 jingwei-frontend-arm64:
