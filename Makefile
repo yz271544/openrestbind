@@ -13,8 +13,6 @@ jingwei-frontend-amd64:
 
 .PHONY: jingwei-frontend-arm64
 jingwei-frontend-arm64:
-	@IMAGE_HASH=$(docker images --no-trunc --quiet openresty/openresty:1.27.1.2-bookworm-fat-aarch64)
-	@echo "IMAGE_HASH:${IMAGE_HASH}"
 	@./release.sh ${VERSION}
 	docker buildx build --platform linux/arm64/v8 -t ${REPO}/jingwei-frontend-arm64:${VERSION} --build-arg VERSION=${VERSION} --build-arg IMAGE_HASH=${IMAGE_HASH} -f arm64.dockerfile . --load
 
