@@ -14,7 +14,7 @@ jingwei-frontend-amd64:
 .PHONY: jingwei-frontend-arm64
 jingwei-frontend-arm64:
 	@./release.sh ${VERSION}
-	docker buildx build --platform linux/amd64 --no-cache -t ${REPO}/jingwei-frontend-amd64:${VERSION} --build-arg VERSION=${VERSION} -f arm64.dockerfile .
+	docker buildx build --platform linux/amd64 --no-cache -t ${REPO}/jingwei-frontend-arm64:${VERSION} --build-arg VERSION=${VERSION} -f arm64.dockerfile .
 
 .PHONY: images
 images: jingwei-frontend-amd64 jingwei-frontend-arm64
