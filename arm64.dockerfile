@@ -1,4 +1,4 @@
-FROM openresty/openresty:1.27.1.2-bookworm-fat-aarch64
+FROM openresty/openresty@sha256:${IMAGE_HASH}
 LABEL authors="Lyndon"
 
 RUN apt update
