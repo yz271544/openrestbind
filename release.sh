@@ -34,13 +34,13 @@ if [ -n "$(git log origin/master..HEAD)" ]; then
   exit 1
 fi
 
-echo "create release for tag: $current_tag"
-curl --request POST --header "PRIVATE-TOKEN: mhVqLTzGk_V2yMBeiwwf" \
-  --data name="release-${current_tag}" \
-  --data tag_name="${current_tag}" \
-  --data url="http://172.31.100.21/zhengyang.hu/jingwei-xserver-plus" \
-  --data ref="${current_tag}" \
-  --data description="$1" \
-  http://172.31.100.21/api/v4/projects/60/releases
+#echo "create release for tag: $current_tag"
+#curl --request POST --header "PRIVATE-TOKEN: mhVqLTzGk_V2yMBeiwwf" \
+#  --data name="release-${current_tag}" \
+#  --data tag_name="${current_tag}" \
+#  --data url="http://172.31.100.21/zhengyang.hu/openrestbind" \
+#  --data ref="${current_tag}" \
+#  --data description="$1" \
+#  http://172.31.100.21/api/v4/projects/60/releases
 
-curl --header "PRIVATE-TOKEN: mhVqLTzGk_V2yMBeiwwf" http://172.31.100.21/api/v4/projects/60/releases
+#curl --header "PRIVATE-TOKEN: mhVqLTzGk_V2yMBeiwwf" http://172.31.100.21/api/v4/projects/60/releases
