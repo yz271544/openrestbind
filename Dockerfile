@@ -2,6 +2,7 @@ FROM openresty/openresty:1.27.1.2-bookworm-fat
 
 LABEL authors="Lyndon"
 
+RUN sed -i "s/deb.debian.org/mirrors.ustc.edu.cn/g" /etc/apt/sources.list.d/debian.sources
 RUN apt update
 RUN apt install -y dmidecode sudo
 
