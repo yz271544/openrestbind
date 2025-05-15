@@ -1,4 +1,4 @@
-FROM openresty/openresty@sha256:${IMAGE_HASH}
+FROM openresty/openresty@${IMAGE_HASH}
 LABEL authors="Lyndon"
 
 RUN apt update
