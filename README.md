@@ -10,5 +10,5 @@ echo $BIND_MACHINE
 ## build
 
 ```shell
-docker build -t registry.cn-beijing.aliyuncs.com/dc_huzy/openresty:noble-amd64 .
+docker build -t registry.cn-beijing.aliyuncs.com/dc_huzy/openresty:noble .
 ```
