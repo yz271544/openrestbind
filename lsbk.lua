@@ -51,6 +51,7 @@ local function decode_bind_uuid(bind_uuid)
 	if systemArch == "aarch64" then
 		command = "/usr/local/openresty/bin/IceCodeAarch64.exe -d" .. bind_uuid .. " jingwei0226"
 	end
+	ngx.log(ngx.INFO, "systemArch: ", systemArch, " command: ", command)
 	local file = io.popen(command)
 	if file then
 		local decode_uuid = file:read("*a")
