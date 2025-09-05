@@ -95,10 +95,14 @@ end
 
 local function handle_protected_route(backend_location)
 	local ischeck = os.getenv("IS_CHECK")
+	ngx.log(ngx.INFO, "环境变量IS_CHECK原始值: [", tostring(ischeck), "]")
 	local license_passed = true
-	if ischeck and ischeck == "true" then
-		ngx.log(ngx.INFO, "ischeck: ", ischeck)
+	if type(ischeck) == "string" and ischeck:lower() == "true" then
+		ngx.log(ngx.INFO, "进入license检查流程，IS_CHECK为true")
 		license_passed = license_check()
+		ngx.log(ngx.INFO, "license检查结果: ", tostring(license_passed))
+	else
+		ngx.log(ngx.INFO, "未进入license检查流程，IS_CHECK值不符合条件")
 	end
 	if license_passed then
 		ngx.header["LICENSECHECK"] = "JINGWEI"
