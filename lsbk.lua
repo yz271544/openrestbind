@@ -94,8 +94,11 @@ local function handle_container_validation()
 end
 
 local function handle_protected_route(backend_location)
-	-- local license_passed = license_check()
+	local ischeck = os.getenv("IS_CHECK")
 	local license_passed = true
+	if ischeck then
+		license_passed = license_check()
+	end
 	if license_passed then
 		ngx.header["LICENSECHECK"] = "JINGWEI"
 		local backend_server = ngx.var.backend
