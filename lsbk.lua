@@ -97,6 +97,7 @@ local function handle_protected_route(backend_location)
 	local ischeck = os.getenv("IS_CHECK")
 	local license_passed = true
 	if ischeck and ischeck == "true" then
+		ngx.log(ngx.INFO, "ischeck: ", ischeck)
 		license_passed = license_check()
 	end
 	if license_passed then
