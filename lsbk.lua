@@ -96,7 +96,7 @@ end
 local function handle_protected_route(backend_location)
 	local ischeck = os.getenv("IS_CHECK")
 	local license_passed = true
-	if ischeck then
+	if ischeck and ischeck == "true" then
 		license_passed = license_check()
 	end
 	if license_passed then
